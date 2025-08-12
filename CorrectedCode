@@ -22,7 +22,7 @@ ParanoiaData$Gender <- as.factor(ParanoiaData$Gender)
 ParanoiaData$Ethnicity <- as.factor(ParanoiaData$Ethnicity)
 ParanoiaData$GADS_Total <- as.numeric(ParanoiaData$GADS_Total)
 ParanoiaData$DTS_Total <- as.numeric(ParanoiaData$DTS_Total)
-ParanoiaData$PWQ_Total <- as.numeric(ParanoiaData$PWQ_Total)
+ParanoiaData$PWQ_Total <- as.numeric( T ParanoiaData$PWQ_Total)
 ParanoiaData$MADRS_Total <- as.numeric(ParanoiaData$MADRS_Total)
 
 #Scatterplots
