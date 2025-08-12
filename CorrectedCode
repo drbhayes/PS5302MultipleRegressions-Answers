@@ -52,6 +52,7 @@ ParanoiaData %>%
   dplyr::select(PWQ_Total, DTS_Total, MADRS_Total, GADS_Total) %>%
   correlation(p_adjust = "none")
 
+#EXTRA Activity: Make some cute plots and send them to Beatrice :) <3 
 
 #Comparing Correlations
 cor.test(ParanoiaData$PWQ_Total, ParanoiaData$DTS_Total,
