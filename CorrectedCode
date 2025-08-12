@@ -1,0 +1,92 @@
+# PREPARING DATA
+#Install packages
+install.packages("tidyverse")
+install.packages("correlation")
+install.packages("gridExtra")
+install.packages("ppcor")
+install.packages("cocor")
+library(tidyverse)
+library(correlation)
+library(gridExtra)
+library(ppcor)
+library(cocor)
+
+#Viewing data
+ParanoiaData <- read_csv("Paranoia.csv")
+view(ParanoiaData)
+summary(ParanoiaData)
+
+#Defining variables
+ParanoiaData$Age <- as.numeric(ParanoiaData$Age)
+ParanoiaData$Gender <- as.factor(ParanoiaData$Gender)
+ParanoiaData$Ethnicity <- as.factor(ParanoiaData$Ethnicity)
+ParanoiaData$GADS_Total <- as.numeric(ParanoiaData$GADS_Total)
+ParanoiaData$DTS_Total <- as.numeric(ParanoiaData$DTS_Total)
+ParanoiaData$PWQ_Total <- as.numeric(ParanoiaData$PWQ_Total)
+ParanoiaData$MADRS_Total <- as.numeric(ParanoiaData$MADRS_Total)
+
+#Scatterplots
+plot1 <- ggplot(ParanoiaData, aes(x = PWQ_Total, y = GADS_Total)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  theme_classic()
+
+plot2 <- ggplot(ParanoiaData, aes(x = PWQ_Total, y = DTS_Total)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  theme_classic()
+
+plot3 <- ggplot(ParanoiaData, aes(x = PWQ_Total, y = MADRS_Total)) +
+  geom_point() +
+  geom_smooth(method = "lm",
+              se = FALSE) +
+  theme_classic()
+
+grid.arrange(plot1, plot2, plot3, nrow = 1, ncol = 3) 
+
+# CORRELATIONS
+#Pearsons Correlations
+ParanoiaData %>%
+  dplyr::select(PWQ_Total, DTS_Total, MADRS_Total, GADS_Total) %>%
+  correlation(p_adjust = "none")
+
+
+#Comparing Correlations
+cor.test(ParanoiaData$PWQ_Total, ParanoiaData$DTS_Total,
+         method = "pearson")
+cor.test(ParanoiaData$PWQ_Total, ParanoiaData$GADS_Total,
+         method = "pearson")
+cor.test(ParanoiaData$PWQ_Total, ParanoiaData$MADRS_Total,
+         method = "pearson")
+
+#MULTIPLE REGRESSION - Forced entry
+
+Forcedentry <- lm(PWQ_Total ~ DTS_Total + GADS_Total + MADRS_Total, 
+                  data = ParanoiaData)
+summary(Forcedentry)
+
+#MULTIPLE REGRESSION - Stepwise
+
+Stepwise <- lm(PWQ_Total ~ DTS_Total + GADS_Total + MADRS_Total, 
+               data= ParanoiaData)
+StepwiseBackwards <- step(Stepwise, direction="backward")
+summary(StepwiseBackwards)
+
+#HIERARCHICAL REGRESSION 
+Hierarchical <- lm(PWQ_Total ~ DTS_Total + GADS_Total + MADRS_Total, 
+                   data = ParanoiaData)
+summary(Hierarchical)
+
+Control <- lm(PWQ_Total ~ DTS_Total, 
+              data = ParanoiaData)
+summary(Control)
+
+r2_control <- summary(Control)$adj.r.squared
+r2_full <- summary(Hierarchical)$adj.r.squared
+r2_change <- r2_full - r2_control
+print(r2_change)
+
+anova(Control, Hierarchical)
+#ADVANCED ACTIVITY: Repeat these steps adding Age as a predictor.
